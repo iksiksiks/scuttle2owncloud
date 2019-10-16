@@ -19,6 +19,9 @@ Upload the two files and run *scuttle2owncloud.php*.
 
 [![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=repat&url=https://github.com/repat/scuttle2owncloud&title=scuttle2owncloud&language=&tags=github&category=software) 
 
+## Modify (by iksiksiks, October 2019)
+* Added bookmark creation and last modify date retrieval and necessary conversions to use them in Owncloud or Nextcloud database.
+
 ### Copyright
 Pretty much do-whatever-you-want
 * MIT-License, see [opensource.org](http://opensource.org/licenses/mit-license.php "opensource.org MIT License") for details
