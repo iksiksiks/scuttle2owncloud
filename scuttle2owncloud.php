@@ -2,9 +2,10 @@
 /**
 * scuttle2owncloud.php
 * released under MIT License(see extra file)
-* version 0.9.1
+* version 0.9.1a
 * (c) by repat, <repat[at]repat[dot]de>, http://repat.de
 * June 2013
+* Forked and modified by iksiksiks in October 2019; added datetime parsing
 */
 
 //-----------------------//
@@ -37,8 +38,8 @@ if (!$ocDbSelected) {
     die ('Cannot use ' . $owncloudDb . ": " . mysql_error());
 }
 
-// Get the scuttle bookmarks
-$scResultBm = mysql_query('SELECT bId, bTitle, bAddress, bDescription FROM ' . $scuttleBmTable, $scLink);
+// Get the scuttle bookmarks, including timestamps 
+$scResultBm = mysql_query('SELECT bId, bTitle, bAddress, bDescription, bDatetime, bModified FROM ' . $scuttleBmTable, $scLink);
 if (!$scResultBm) {
     die('Illegal scResultBm-query: ' . mysql_error());
 }
@@ -49,14 +50,14 @@ $tags = 0;
 // get bookmark array
 while ($bmRow = mysql_fetch_row($scResultBm)) {
 	
-	// insert bookmark into owncloud
-	$ocResultBm = mysql_query('INSERT INTO ' . $owncloudBmTable . " (title, url, description, user_id, added, lastmodified) VALUES ('" .  mysql_real_escape_string($bmRow[$TITLE]) . "', '" .  mysql_real_escape_string($bmRow[$URL]) . "', '" .  mysql_real_escape_string($bmRow[$DESCRIPTION]) . "', '" . mysql_real_escape_string($owncloudUsername) . "', '" . time() . "', '" . time() . "')", $ocLink);
+	// insert bookmark into owncloud, timestamps are converted to UNIX Epoch time
+	$ocResultBm = mysql_query('INSERT INTO ' . $owncloudBmTable . " (title, url, description, user_id, added, lastmodified) VALUES ('" .  mysql_real_escape_string($bmRow[$TITLE]) . "', '" .  mysql_real_escape_string($bmRow[$URL]) . "', '" .  mysql_real_escape_string($bmRow[$DESCRIPTION]) . "', '" . mysql_real_escape_string($owncloudUsername) . "', '" .  strtotime(mysql_real_escape_string($bmRow[$DATETIME])) . "', '" . strtotime(mysql_real_escape_string($bmRow[$MODIFIED])) . "')", $ocLink);
 	if (!$ocResultBm) {
 		die('Illegal ocResultBm-query: ' . mysql_error());
 	}
 
 	$bookmarkID = mysql_insert_id();
-	
+		
 	// get the matching tags where bId = bId
 	$scResultT = mysql_query('SELECT bId, tag FROM ' . $scuttleTagsTable . " WHERE (bId = '" . $bmRow[$ID] . "')", $scLink);
 	if (!$scResultT) {
